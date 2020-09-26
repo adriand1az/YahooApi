@@ -1,0 +1,47 @@
+from bs4 import BeautifulSoup as soup
+from urllib.request import urlopen as ureq
+
+stock = input("Enter stock ticker symbol: ")
+my_url_quote = f"https://finance.yahoo.com/quote/{stock}/"
+u_client = ureq(my_url_quote)
+page_html = u_client.read()
+u_client.close()
+
+# html parser
+page_soup = soup(page_html, 'html.parser')
+
+
+class Quote:
+
+    def stock_price(self):
+        # Finding current stock price
+        current_price_container = page_soup.find("div", {"class": "D(ib) Mend(20px)"})
+        stock_price = current_price_container.span.text
+        print(f"Current Stock Price: ${stock_price}")
+
+    def volume(self):
+        # Finding current volume
+        volume = page_soup.find("td", {"data-test": "TD_VOLUME-value"}).text
+        print(f"Volume: {volume}")
+
+    def average_volume(self):
+        # Finding average volume
+        average_volume = page_soup.find("td", {"data-test": "AVERAGE_VOLUME_3MONTH-value"}).text
+        print(f"Average Volume: {average_volume}")
+
+    def eps_ratio(self):
+        eps_ratio = page_soup.find("td", {"data-test": "EPS_RATIO-value"}).text
+        print(f"Earnings Per Share Ratio: {eps_ratio}")
+
+    def market_cap(self):
+        # Finding market-cap
+        market_cap = page_soup.find("td", {"data-test": "MARKET_CAP-value"}).text
+        print(f"Market Cap: {market_cap}")
+
+    def target_estimate(self):
+        # Finding 1 year target estimate
+        target_estimate = page_soup.find("td", {"data-test": "ONE_YEAR_TARGET_PRICE-value"}).text
+        print(f"Target Year Estimate: {target_estimate}")
+
+
+Quote().target_estimate()
